@@ -1,0 +1,50 @@
+<!-- extends表明此页面继承自 base.html 文件 -->
+{% extends "base.html" %}
+{% load staticfiles %}
+
+<!-- 写入 base.html 中定义的 title -->
+{% block title %}
+    文章详情
+{% endblock title %}
+
+<!-- 写入 base.html 中定义的 content -->
+{% block content %}
+
+<!-- 文章详情 -->
+<div class="container">
+    <div class="row">
+        <!-- 标题及作者 -->
+        <h1 class="col-12 mt-4 mb-4">{{ article.title }}</h1>
+        <!-- 删除文章表单 -->
+        <div class="col-12 alert alert-success">作者：{{ article.author }}
+            · <a herf="#" onclick="confirm_safe_delete()" class="text-danger">删除文章</a>
+            · <a href="{% url 'article:article_update' article.id %}">编辑文章</a>
+            <!-- 新增隐藏表单 -->
+            <form
+                style="display: none"
+                id="safe_delete"
+                method="post"
+                action="{% url 'article:article_safe_delete' article.id %}">
+                {% csrf_token %}
+                <button type="submit">发送</button>
+            </form>
+        </div>
+        <!-- 文章正文 -->
+        <div class="col-12">
+            <p>{{ article.body|safe }}</p>
+        </div>
+        <script>
+            function confirm_safe_delete() {
+                layer.open({
+                    title: '删除文章',
+                    content: '确定删除文章吗？',
+                    yes: function(index, layer) {
+                        $('form#safe_delete button').click();
+                        layer.close(index)
+                    }
+                })
+            }
+        </script>
+</div>
+
+{% endblock content %}
